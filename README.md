@@ -1,5 +1,22 @@
 # JSON Server [![](https://travis-ci.org/typicode/json-server.svg?branch=master)](https://travis-ci.org/typicode/json-server) [![](https://badge.fury.io/js/json-server.svg)](http://badge.fury.io/js/json-server)
 
+# Why we fork?
+json-server is forked from [typicode/json-server](https://github.com/typicode/json-server)
+
+So basically the reason why we fork?
+- Adapt to change API standard to fit our need
+- Some importand features we need support? (TBD)
+
+High level changes we made:
+- Change sort, use plus sign (+), minus sign (-) to identify sort direction
+- Remove slice feature
+- Simplify relation operation, merge _embed and _expand to _include
+- Change pagination response, to use meta root element in JSON response instead of X-Total-Count header
+- Keep name convention consistend, q changed to _q. all reserved param name starts with _
+
+ToDo:
+- mock action response instead of empty response (collection and member)
+
 Get a full fake REST API with __zero coding__ in __less than 30 seconds__ (seriously)
 
 Created with <3 for front-end developers who need a quick back-end for prototyping and mocking.
@@ -163,9 +180,6 @@ GET /comments?author.name=typicode
 
 Use `_page` and optionally `_limit` to paginate returned data.
 
-In the `Link` header you'll get `first`, `prev`, `next` and `last` links.
-
-
 ```
 GET /posts?_page=7
 GET /posts?_page=7&_limit=20
@@ -175,27 +189,17 @@ _10 items are returned by default_
 
 ### Sort
 
-Add `_sort` and `_order` (ascending order by default)
+Add `_sort`, ascending order by default)
 
 ```
-GET /posts?_sort=views&_order=asc
-GET /posts/1/comments?_sort=votes&_order=asc
+GET /posts?_sort=+view                // + means asc
+GET /posts/1/comments?_sort=-votes    // - means desc
 ```
 
 For multiple fields, use the following format:
 
 ```
-GET /posts?_sort=user,views&_order=desc,asc
-```
-
-### Slice
-
-Add `_start` and `_end` or `_limit` (an `X-Total-Count` header is included in the response)
-
-```
-GET /posts?_start=20&_end=30
-GET /posts/1/comments?_start=20&_end=30
-GET /posts/1/comments?_start=20&_limit=10
+GET /posts?_sort=+user,-views
 ```
 
 _Works exactly as [Array.slice](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) (i.e. `_start` is inclusive and `_end` exclusive)_
@@ -222,7 +226,7 @@ GET /posts?title_like=server
 
 ### Full-text search
 
-Add `q`
+Add `_q`
 
 ```
 GET /posts?q=internet
@@ -230,18 +234,18 @@ GET /posts?q=internet
 
 ### Relationships
 
-To include children resources, add `_embed`
+To include children resources, add `_include`
 
 ```
-GET /posts?_embed=comments
-GET /posts/1?_embed=comments
+GET /posts?_include=comments
+GET /posts/1?_include=comments
 ```
 
-To include parent resource, add `_expand`
+To include parent resource, add `_include`
 
 ```
-GET /comments?_expand=post
-GET /comments/1?_expand=post
+GET /comments?_include=post
+GET /comments/1?_include=post
 ```
 
 To get or create nested resources (by default one level, [add custom routes](#add-custom-routes) for more)
